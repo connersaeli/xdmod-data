@@ -122,11 +122,11 @@ class _HttpRequester:
         if post_fields:
             response = self.__requests_session.post(
                 url,
-                headers=self.__headers,
+                headers=headers,
                 data=post_fields,
             )
         else:
-            response = self.__requests_session.get(url, headers=self.__headers)
+            response = self.__requests_session.get(url, headers=headers)
         if response.status_code != 200:
             msg = ''
             try:
@@ -139,7 +139,7 @@ class _HttpRequester:
                     ': Make sure XDMOD_API_TOKEN is set to a valid API token.'
                 )
             raise RuntimeError(
-                'Error ' + str(response.status_code) + msg,
+                token_error_msg + str(response.status_code) + msg,
             ) from None
         if stream:
             return response.iter_lines()
