@@ -33,6 +33,12 @@ class DataWarehouse:
 
     def __init__(self, xdmod_host):
         self.__in_runtime_context = False
+        if xdmod_host is None and os.getenv('XDMOD_HOST'):
+            xdmod_host = os.getenv('XDMOD_HOST')
+        else:
+            raise RuntimeError(
+                "A DataWarehouse object must be configured with an XDMoD host."
+            ) from None
         self.__http_requester = _HttpRequester(xdmod_host)
         self.__descriptors = _Descriptors(self.__http_requester)
 
