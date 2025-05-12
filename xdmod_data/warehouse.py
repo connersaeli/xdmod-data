@@ -31,7 +31,7 @@ class DataWarehouse:
            If `xdmod_host` is not a string.
     """
 
-    def __init__(self, xdmod_host):
+    def __init__(self, xdmod_host = None):
         self.__in_runtime_context = False
         if xdmod_host is None and os.getenv('XDMOD_HOST'):
             xdmod_host = os.getenv('XDMOD_HOST')
