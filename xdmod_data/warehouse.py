@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pandas as pd
 from xdmod_data._descriptors import _Descriptors
