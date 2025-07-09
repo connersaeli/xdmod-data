@@ -11,6 +11,15 @@ export XDMOD_11_0_IMAGE=tools-ext-01.ccr.xdmod.org/xdmod:x86_64-rockylinux8.9.20
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR=$BASE_DIR/../../..
 
+# Generate private/public key pairs for JSON Web Tokens
+declare -a keytype=("xdmod" "daf")
+for key in "${keytype[@]}"
+do
+    private_key="$BASE_DIR/$key-private.pem"
+    openssl genrsa -out $private_key 2048
+    openssl pkey -in $private_key -pubout -out "$BASE_DIR/$key-public.pem"
+done
+
 docker compose -f $BASE_DIR/docker-compose.yml up -d
 
 declare -a python_containers=$(yq '.services | keys | .[] | select(. == "python-*")' $BASE_DIR/docker-compose.yml)
@@ -63,6 +72,10 @@ for xdmod_container in $xdmod_containers; do
     # Run the XDMoD web server.
     docker exec $xdmod_container bash -c '/root/bin/services start'
   fi
+  # Copy JSON Web Token public/private keys to the XDMoD container
+  docker exec $xdmod_container bash -c "mkdir /etc/xdmod/keys"
+  docker cp "$BASE_DIR/xdmod-private.pem" $xdmod_container:/etc/xdmod/keys
+  docker cp "$BASE_DIR/daf-public.pem" $xdmod_container:/etc/xdmod/keys
   # Copy the 10,000 users file into the container and shred it.
   # We use this file so we can test filters with more than 10,000
   # values and date ranges that span multiple quarters.

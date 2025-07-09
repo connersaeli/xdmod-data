@@ -25,14 +25,14 @@ def test___init___TypeError_xdmod_host():
         DataWarehouse(2)
 
 
-def test___init___KeyError():
+def test___init___RuntimeError():
     token = os.environ['XDMOD_API_TOKEN']
     del os.environ['XDMOD_API_TOKEN']
     with pytest.raises(
-        KeyError,
-        match='`XDMOD_API_TOKEN` environment variable has not been set.',
+        RuntimeError,
+        match='A DataWarehouse object must be configured with an XDMoD host.',
     ):
-        DataWarehouse(VALID_XDMOD_HOST)
+        DataWarehouse()
     os.environ['XDMOD_API_TOKEN'] = token
 
 

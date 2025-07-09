@@ -21,3 +21,15 @@ services:
     container_name: xdmod-11-0
     image: ${XDMOD_11_0_IMAGE}
     tty: true
+  jwt-service:
+    container_name: jwt-service
+    build:
+      context: jwt-service
+    secrets:
+      - daf-private
+    ports:
+      - 7777:7777
+
+secrets:
+  daf-private:
+    file: ./daf-private.pem

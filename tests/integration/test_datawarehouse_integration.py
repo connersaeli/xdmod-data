@@ -7,6 +7,7 @@ from xdmod_data.warehouse import DataWarehouse
 
 VALID_XDMOD_HOST = os.environ['XDMOD_HOST']
 TOKEN_PATH = '~/.xdmod-data-token'
+JWT_SERVICE_URL = 'http://jwt-service:7777/normaluser'
 INVALID_STR = 'asdlkfjsdlkfisdjkfjd'
 METHOD_PARAMS = {
     'get_data': (
@@ -112,14 +113,16 @@ for method in METHOD_PARAMS:
             key_error_test_params += [(method, {'filters': value}, match)]
 
 
-load_dotenv(Path(os.path.expanduser(TOKEN_PATH)), override=True)
-
-
-@pytest.fixture(scope='module')
+@pytest.fixture(params=['api', 'jwt'])
 def dw_methods(request):
     xdmod_host = VALID_XDMOD_HOST
     if hasattr(request, 'param'):
         xdmod_host = request.param
+    if request.param == 'api':
+        load_dotenv(Path(os.path.expanduser(TOKEN_PATH)), override=True)
+    elif request.param == 'jwt':
+        os.environ['JUPYTERHUB_JWT_URL'] = JWT_SERVICE_URL
+        os.environ['JUPYTERHUB_API_TOKEN'] = 'somerandomtoken'
     with DataWarehouse(xdmod_host) as dw:
         yield __get_dw_methods(dw)
 
