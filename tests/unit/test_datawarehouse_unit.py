@@ -20,20 +20,24 @@ def set_environ():
     os.environ['XDMOD_API_TOKEN'] = token
 
 
+def test__init__xdmod_host_environment_variable():
+    DataWarehouse()
+
+
 def test___init___TypeError_xdmod_host():
     with pytest.raises(TypeError, match='`xdmod_host` must be a string.'):
         DataWarehouse(2)
 
 
-def test___init___KeyError():
-    token = os.environ['XDMOD_API_TOKEN']
-    del os.environ['XDMOD_API_TOKEN']
+def test__init__RuntimeError():
+    xdmod_host = os.environ['XDMOD_HOST']
+    del os.environ['XDMOD_HOST']
     with pytest.raises(
-        KeyError,
-        match='`XDMOD_API_TOKEN` environment variable has not been set.',
+        RuntimeError,
+        match='A DataWarehouse object must be configured with an XDMoD host.',
     ):
-        DataWarehouse(VALID_XDMOD_HOST)
-    os.environ['XDMOD_API_TOKEN'] = token
+        DataWarehouse()
+    os.environ['XDMOD_HOST'] = xdmod_host
 
 
 def test___enter___RuntimeError_xdmod_host_malformed():
